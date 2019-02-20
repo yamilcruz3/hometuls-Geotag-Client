@@ -1,0 +1,101 @@
+<head>
+  <!-- Jquery CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <!-- Replace the value of the key parameter with your own API key. -->
+  <script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=YOURKEYHERE&callback=getLocations">
+  </script>
+  <style media="screen">
+    /* Set the size of the div element that contains the map */
+  #map {
+    height: 80%;  /* The height is 400 pixels */
+    width: 100%;  /* The width is the width of the web page */
+   }
+  </style>
+</head>
+<body>
+  <h3>Hometuls GeoTag test</h3>
+  <!--The div element for the map -->
+  <div id="map"></div>
+  <br>
+
+  <button type="button" onclick="createLocation()"> Create new Record</button>
+</body>
+
+<script type="text/javascript">
+
+function getLocations(){
+  $.get("http://34.201.19.114:40003/recordController/getAllRecords",
+          function(data){
+
+            initMap(data);
+            console.log(data);
+          });
+}
+  // Initialize and add the map
+function initMap(locations) {
+
+  var marks_loc = [];
+  locations.forEach(function(a){
+    marks_loc.push({lat:a.latitude, lng:a.longitude});
+  });
+
+  var markers = marks_loc.map(function(location, i) {
+    return new google.maps.Marker({
+      position: location
+    });
+  });
+
+  var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 7, center: marks_loc[0]});
+
+
+  var markerCluster = new MarkerClusterer(map, markers,
+      {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+}
+
+function createLocation(){
+
+$.ajax({
+  url:"http://18.207.108.194:4200/recordController/createRecord",
+  crossorigin: true,
+  type: "POST",
+  dataType: "json",
+  data:{
+        id:"24e5a943-bf98-45e6-8e53-abaefadf4b19",
+        categoryA:"F",
+        categoryB:"F5",
+        comments:null,
+        politicA:null,
+        politicB:null,
+        politicC:"liberal",
+        anonymus:false,
+        name:"Yamil L Cruz",
+        email:"yamil.cruz@outlook.com",
+        phone:"",
+        code_state:"1",
+        code_city:"106",
+        gender:"M",
+        ipAddress:null,
+        ipInfo:null,
+        date:1549746375000,
+        image:null,
+        staName:"ANTIOQUIA",
+        citName:"CHIGORODO",
+        citId:null,latitude:7.665099,
+        longitude:-76.67748999999999,
+        countItems:0
+        },
+  success:function(data){
+      console.log(data);
+      alert("New record have beign created: id = " + data.record.id);
+
+    }
+  });
+
+}
+
+</script>
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
